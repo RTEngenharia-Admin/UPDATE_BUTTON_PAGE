@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RT SYSTEM UPDATE</title>
+<style>
+
+    body{
+        font-family: "Roboto", sans-serif;
+        text-align: center;
+        
+  
+  font-style: normal;
+    }
+    .button-83 {
+  appearance: button;
+  background-color: transparent;
+  background-image: linear-gradient(to bottom, #e93737, #ea3510);
+  border: 0 solid #e5e7eb;
+  color: white; 
+  border-radius: .5rem;
+  font-family: "Roboto", sans-serif;
+  box-sizing: border-box;
+  color: #482307;
+  column-gap: 1rem;
+  cursor: pointer;
+  display: flex;
+  font-family: ui-sans-serif,system-ui,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  font-size: 100%;
+  font-weight: 700;
+  line-height: 24px;
+  margin: 0;
+  outline: 2px solid transparent;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  text-transform: none;
+  transition: all .1s cubic-bezier(.4, 0, .2, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  box-shadow: -6px 8px 10px rgba(81,41,10,0.1),0px 2px 2px rgba(81,41,10,0.2);
+}
+
+.button-83:active {
+  background-color: red;
+  box-shadow: -1px 2px 5px rgba(81,41,10,0.15),0px 1px 1px rgba(81,41,10,0.15);
+  transform: translateY(0.125rem);
+}
+
+.button-83:focus {
+  box-shadow: rgba(72, 35, 7, .46) 0 0 0 4px, -6px 8px 10px rgba(81,41,10,0.1), 0px 2px 2px rgba(81,41,10,0.2);
+}
+    h1{
+        
+    }
+    .button-container {
+        display: flex;
+
+        justify-content: center;
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .loading-spinner {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #f42828;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+    .align_itens_center{
+        display: flex;
+        justify-content: center;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    pre{
+       font-size: 14px;
+       padding: 1rem;
+    
+    }
+
+    #json{
+        color: #08640b; 
+    }
+    #json_error{
+        padding: 1rem;
+        color: rgb(104, 9, 9); 
+
+    }
+
+</style>
+</head>
+<body>
+
+<br class="button-container">
+    <h1>Gerenciador de atualizações</h1>
+    <div class = "align_itens_center">    <button id="myButton"  button class="button-83" role="button" onclick="sendPutRequest()">ATUALIZAR</button></div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+<br> </br>
+    <div>
+
+        <pre id="json">
+    
+        </pre>
+
+        <pre id="json_error">
+    
+        </pre> </div>
+
+</div>
+
+<script>
+function sendPutRequest() {
+    // Show loading overlay
+    document.getElementById('loadingOverlay').style.display = 'flex';
+
+    // PUT request options
+    const requestOptions = {
+        method: "PUT",
+        redirect: "follow"
+    };
+
+    // Send PUT request
+    fetch("https://sistem-rt-update-manager.azurewebsites.net/update", requestOptions)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // Parse response as JSON
+        })
+        .then((result) => {
+            // Hide loading overlay after request completion
+            document.getElementById('loadingOverlay').style.display = 'none';
+            
+            // Do something with the result if needed
+            const responseAsJson = JSON.stringify(result);
+            document.getElementById('json').innerText = responseAsJson;
+            console.log("Or response here", result);
+        })
+        .catch((error) => {
+            // Hide loading overlay on error
+            document.getElementById('loadingOverlay').style.display = 'none';
+
+            const responseAsJson = JSON.stringify(error.message);
+            document.getElementById('json_error').innerText = responseAsJson;
+            console.error(error);
+        });
+}
+
+</script>
+
+</body>
+</html>
