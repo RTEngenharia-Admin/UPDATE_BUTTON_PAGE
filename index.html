@@ -117,20 +117,14 @@
 <br class="button-container">
     <h1>Gerenciador de atualizações</h1>
     <div class = "align_itens_center">    <button id="myButton"  button class="button-83" role="button" onclick="sendPutRequest()">ATUALIZAR</button></div>
-
+    <div id = "update_status"> Atualizando ...</div>
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
-<br> </br>
     <div>
-
-        <pre id="json">
-    
-        </pre>
-
-        <pre id="json_error">
-    
-        </pre> </div>
+        <span id ="runned">0</span> / <span id ="not_runned">0</span>
+    <div> <progress id="file" value="32" max="100"> 32% </progress></div>
+        </div>
 
 </div>
 
@@ -155,22 +149,67 @@ function sendPutRequest() {
         })
         .then((result) => {
             // Hide loading overlay after request completion
-            document.getElementById('loadingOverlay').style.display = 'none';
+            // document.getElementById('loadingOverlay').style.display = 'none';
             
             // Do something with the result if needed
             const responseAsJson = JSON.stringify(result);
-            document.getElementById('json').innerText = responseAsJson;
-            console.log("Or response here", result);
+            // document.getElementById('json').innerText = responseAsJson;
+
         })
         .catch((error) => {
             // Hide loading overlay on error
-            document.getElementById('loadingOverlay').style.display = 'none';
+            // document.getElementById('loadingOverlay').style.display = 'none';
 
             const responseAsJson = JSON.stringify(error.message);
-            document.getElementById('json_error').innerText = responseAsJson;
+            // document.getElementById('json_error').innerText = responseAsJson;
             console.error(error);
         });
 }
+
+function update_requests() {
+    const requestOptions = {
+        method: "GET",
+        redirect: "follow"
+    };
+
+    // document.getElementById('json').innerText = "loading...";
+    fetch("https://systemrtdevazure.azurewebsites.net/get_updated_routes_relation?rt_token=YfdDQlECBBBXTwAqsrCLU88jds465VbPIevKuZnKLP9N4OwFl", requestOptions)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((result) => {
+            const responseAsJson = JSON.stringify(result);
+            console.log("Result", responseAsJson);
+            // document.getElementById('json').innerText = responseAsJson;
+            let not_runned = result.not_runned
+            let runned = result.runned
+            let portion = runned / (not_runned + runned)* 100
+            console.log("portion", portion)
+            console.log("Or response here",not_runned);
+            console.log("runned", runned)
+
+
+            document.getElementById('file').value = portion;
+            document.getElementById('runned').innerText = runned;
+            document.getElementById('not_runned').innerText = not_runned + runned;
+            if(not_runned != 0){
+                document.getElementById('myButton').style.display = "none";
+                
+            }else{
+                
+                document.getElementById('update_status').style.display = "none";
+            }
+        })
+        .catch((error) => {
+            // const responseAsJson = JSON.stringify(error.message);
+            console.error(error);
+        });
+}
+update_requests();
+setInterval(update_requests, 30000);
 
 </script>
 
